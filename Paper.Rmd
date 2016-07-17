@@ -79,7 +79,7 @@ paste("The volatility is ", SNPvol)
 
 DecayFactor1 <- 1   ## High volatility is revealed
 DecayFactor2 <- 50  
-DecayFactor3 <- 100 ## Volatility tends to be normalized
+DecayFactor3 <- 99 ## Volatility tends to be normalized
 
 volest1 <- getVol(DecayFactor1,SNPret)
 volest2 <- getVol(DecayFactor2,SNPret)
