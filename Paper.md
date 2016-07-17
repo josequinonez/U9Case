@@ -50,7 +50,7 @@ Jose Q
 ```
 
 ```
-## [1] "Decay factor =  99 , the maximum volatility was in day  1   2008-11-19  due to a change in stock price from  24.23  to  19.139999 ."
+## [1] "Decay factor =  100 , the maximum volatility was in day  1   2008-11-19  due to a change in stock price from  24.23  to  19.139999 ."
 ```
 
 ```
@@ -64,7 +64,7 @@ Jose Q
 ![](Paper_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 ```
-## [1] "From that day on, the plot for decay factors =  50  and  99  tend to decrease and normalize smoothly."
+## [1] "From that day on, the plot for decay factors =  50  and  100  tend to decrease and normalize smoothly."
 ```
 
 ```
