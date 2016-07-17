@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(root.dir = "/documents/personal/smu/doing data science/u9/u9case")
 ```
 
@@ -41,31 +41,45 @@ getVol <- function(d, logrets)
 }
 ```
 
-### Selected quote: Procter & Gamble (PG)  
+### Selected quote: Direxion Daily Small Cap Bull 3X (TNA)  
 
-* Source: http://finance.yahoo.com/quote/PG  
+* Source: http://finance.yahoo.com/quote/TNA 
 
 ```{r}
 ## Entering data
-MyQuote <- "PG"
+
+MyQuote <- "TNA"
 SNPdata <- get.hist.quote(MyQuote, quote="Close")
+## Plot data
+plot(SNPdata, main="Close stock price for TNA", xlab="Year", ylab = "Close price", col="brown")
 ```
 
 ```{r}
 ## Calculate log returns
+
 SNPret <- log(lag(SNPdata)) - log(SNPdata)
+## Plot log returns
+plot(SNPret, main="Log returns", xlab="Year", ylab = "Log return", col="orange")
+
+MinReturn <- which.min(SNPret)
+
+paste("The mean log return is ", mean(SNPret), " which is an average win of ", exp(mean(SNPret)))
+paste("The biggest change in a single day from ", SNPdata[MinReturn], " in ", attributes(SNPdata[MinReturn])$index, " to ", SNPdata[MinReturn+1], " in ", attributes(SNPdata[MinReturn+1])$index)
 ```
 
 ```{r}
 ## Calculate volatility measures
+
 SNPvol <- sd(SNPret) * sqrt(250) * 100
+paste("The volatility is ", SNPvol)
 ```
 
 ```{r}
 ## Calculate volatility using three different decay factors.
-DecayFactor1 <- 1   ## Low values in the decay factor
+
+DecayFactor1 <- 1   ## High volatility is revealed
 DecayFactor2 <- 50  
-DecayFactor3 <- 100 ## High values in the decay factor
+DecayFactor3 <- 100 ## Volatility tends to be normalized
 
 volest1 <- getVol(DecayFactor1,SNPret)
 volest2 <- getVol(DecayFactor2,SNPret)
@@ -74,7 +88,7 @@ volest3 <- getVol(DecayFactor3,SNPret)
 
 ```{r}
 ## Plot volatility data
-plot(volest1,type="l", xlab="Number of day", ylab = "Volatility", main= "Volatility by decay factor: cyan = 1, red = 50, blue = 100", col="cyan")
+plot(volest1,type="l", xlab="Number of day", ylab = "Volatility", main= "Volatility by decay factor: yellow = 1, red = 50, blue = 100", col="yellow")
 
 lines(volest2,type="l",col="red")
 
@@ -82,18 +96,47 @@ lines(volest3, type = "l", col="blue")
 ```
 
 ```{r}
-MaxVolDay <- which.max(volest1)
+MaxVolDay_DecayFactor1 <- which.max(volest1)
+MaxVolDay_DecayFactor2 <- which.max(volest2)
+MaxVolDay_DecayFactor3 <- which.max(volest3)
 
-paste ("Max volatility = ", max(volest1), " in day ", MaxVolDay, " ", attributes(SNPdata[368])$index, "due to a change from stock price from ", SNPdata[MaxVolDay], " to ", SNPdata[MaxVolDay+1], "." )
+paste ("Decay factor = ", DecayFactor1, ", the maximum volatility was in day ", MaxVolDay_DecayFactor1, " ", attributes(SNPdata[MaxVolDay_DecayFactor1])$index, " due to a change in stock price from ", round(SNPdata[MaxVolDay_DecayFactor1],6) , " to ", round(SNPdata[MaxVolDay_DecayFactor1+1],6) , "." )
 
-paste ("The average variation from day to day is +/- ", exp(mean(SNPret)), ".")
+paste ("Decay factor = ", DecayFactor2, ", the maximum volatility was in day ", MaxVolDay_DecayFactor2, " ", attributes(SNPdata[MaxVolDay_DecayFactor2])$index, " due to a change in stock price from ", round(SNPdata[MaxVolDay_DecayFactor2],6) , " to ", round(SNPdata[MaxVolDay_DecayFactor2+1],6) , "." )
+
+paste ("Decay factor = ", DecayFactor3, ", the maximum volatility was in day ", MaxVolDay_DecayFactor3, " ", attributes(SNPdata[MaxVolDay_DecayFactor3])$index, " due to a change in stock price from ", round(SNPdata[MaxVolDay_DecayFactor3],6) , " to ", round(SNPdata[MaxVolDay_DecayFactor3+1],6) , "." )
+
+paste ("The volatility in day 1 ", attributes(SNPdata[MaxVolDay_DecayFactor2])$index, " is ", volest3[1], " using the 3 different decay factors.")
+
+paste ("This is because in day 1, there is no previous history that  influences the decay factor.")
+
+plot(volest1[1:10],type="l", xlab="Number of day", ylab = "Volatility", main= "Volatility by decay factor in days 1 to 10", col="yellow")
+
+lines(volest2[1:10],type="l",col="red")
+
+lines(volest3[1:10], type = "l", col="blue")
+
+paste("From that day on, the plot for decay factors = ", DecayFactor2, " and ", DecayFactor3, " tend to decrease and normalize smoothly.")
+
+paste("In day ", MaxVolDay_DecayFactor1, " ", attributes(SNPdata[MaxVolDay_DecayFactor1])$index, " there is a big change that peaks the plot for decay factor = ", DecayFactor1, " but not the other normalized plots.") 
+
+
+plot(volest1[1080:1110],type="l", xlab="Number of day", ylab = "Volatility", main= "Volatility by decay factor in days 1080 to 1110", col="yellow",  xaxt = "n")
+axis(1, at = seq(1,31,by=1), labels=seq(from = 1080, to=1110, by=1))
+
+lines(volest2[1080:1110],type="l",col="red")
+
+lines(volest3[1080:1110], type = "l", col="blue")
 ```
 
 ### Conclusion  
 
-#### The stock price for PG has been very stable, except for four events with extreme changes.  
+#### The stock price for TNA has been very volatile (volatility = 77.73), which means that, in the long term, this stock tends to change its price quite often with changes in log returns.
 
-#### The decay factor of 100 shows a more normalized curve. It means that in the long run, this is a very stable quote with few changes, reducing the importance to those few peaks.  
+#### Even the decay factor = 100 shows a more normalized curve, volatility index is higher than other stocks.  
+
 ###  
+
+
 
 
